@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jyoti's Surprise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(-45deg, #ffe6f0, #fbc2eb, #a6c1ee, #fff);
+      background-size: 500% 500%;
+      animation: gradient 20s ease infinite;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .floating-hearts span {
+      position: absolute;
+      top: 100%;
+      font-size: 1.5rem;
+      opacity: 0.7;
+      animation: floatUp 10s linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-120vh) translateX(-30px);
+        opacity: 0;
+      }
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 95%;
+      max-width: 550px;
+      height: 400px;
+      perspective: 1000px;
+      z-index: 2;
+    }
+
+    .ribbon {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #ff6f91, #ff9671);
+      color: white;
+      font-weight: bold;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 5;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.05); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+
+    .envelope {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      border-radius: 18px;
+      border: 4px solid #ff6f91;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      overflow: hidden;
+    }
+
+    .flap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #ff6f91;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      transform-origin: top;
+      transition: transform 1.2s ease, opacity 1.2s ease;
+      z-index: 3;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5em;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+
+    .flap::after {
+      content: "Tap to Open Boss ❤️";
+    }
+
+    .sticker {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 60px;
+      height: 60px;
+      background-image: url("billu.png");
+      background-size: cover;
+      z-index: 4;
+    }
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+      opacity: 0;
+    }
+
+    .content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) translateY(150px);
+      opacity: 0;
+      transition: all 1.5s ease;
+      z-index: 1;
+      width: 90%;
+      height: 85%;
+      overflow-y: auto;
+      padding: 20px;
+      text-align: center;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 15px;
+    }
+
+    .envelope.open .content {
+      transform: translate(-50%, -50%) translateY(-30px);
+      opacity: 1;
+    }
+
+    .content img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      margin-top: 15px;
+    }
+
+    .content p {
+      font-size: 1.2em;
+      color: #333;
+      background: #fff8fb;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-top: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    @media screen and (max-width: 600px) {
+      .content p {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating emojis -->
+<div class="floating-hearts" id="hearts"></div>
+
+<div class="envelope-wrapper">
+  <div class="ribbon">💌 For You Miss Diva</div>
+
+  <div class="envelope" id="envelope">
+    <div class="sticker"></div>
+    <div class="flap" onclick="toggleEnvelope()"></div>
+
+    <div class="content" id="content">
+      <pre>🌟 For my Beautiful Boss:- 
+        "To someone truly beautiful, inside and out...
+       A face that charms, a smile that warms,
+       and a heart that shines—
+       you're beauty in its truest form."
+      "With a smile that heals and a heart that glows,
+       you’re joy in its purest form."
+      "You're not just pretty—
+      you’re a spark of life wrapped in a smile.
+      The world feels lighter when you're around."</pre>
+      <img src="Boss.png" alt="Hidden Surprise">
+    </div>
+  </div>
+</div>
+
+<script>
+  let isOpen = false;
+  let confettiLaunched = false;
+
+  function toggleEnvelope() {
+    const envelope = document.getElementById("envelope");
+    if (!isOpen) {
+      envelope.classList.add("open");
+      if (!confettiLaunched) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        confettiLaunched = true;
+      }
+    } else {
+      envelope.classList.remove("open");
+    }
+    isOpen = !isOpen;
+  }
+
+  // Floating emoji generator
+  const emojiSet = ['💖', '✨', '🌸', '💕', '💫', '💝', '🌟'];
+  const heartContainer = document.getElementById('hearts');
+
+  function createEmoji() {
+    const span = document.createElement('span');
+    span.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+    span.style.left = Math.random() * 100 + 'vw';
+    span.style.animationDuration = 8 + Math.random() * 5 + 's';
+    heartContainer.appendChild(span);
+
+    setTimeout(() => {
+      heartContainer.removeChild(span);
+    }, 12000);
+  }
+
+  setInterval(createEmoji, 500);
+</script>
+
+</body>
+</html>
